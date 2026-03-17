@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lautaro Santos — AI Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #F5F3EF;
+      --ink:      #111110;
+      --mid:      #555550;
+      --faint:    #C8C5BE;
+      --accent:   #1A6BFF;
+      --accent2:  #0A3E99;
+      --white:    #FDFCFA;
+      --rule:     #D8D5CE;
+      --tag-bg:   #EDEAE4;
+      --serif:    'DM Serif Display', Georgia, serif;
+      --mono:     'DM Mono', 'Courier New', monospace;
+      --sans:     'DM Sans', system-ui, sans-serif;
+      --max:      1200px;
+      --pad:      clamp(1.5rem, 5vw, 4rem);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.25rem var(--pad);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(245,243,239,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--mid);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      padding: 8rem var(--pad) 5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+    }
+
+    .hero-left { position: relative; }
+
+    .hero-label {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .hero-label::before {
+      content: '';
+      display: block;
+      width: 2rem;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--mid);
+      line-height: 1.75;
+      max-width: 480px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--rule);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--ink);
+      transform: translateY(-1px);
+    }
+
+    .hero-right {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .hero-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+
+    .hero-stat {
+      background: var(--white);
+      padding: 2rem;
+      position: relative;
+    }
+
+    .hero-stat-num {
+      font-family: var(--serif);
+      font-size: 3rem;
+      line-height: 1;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-stat-num span { color: var(--accent); }
+
+    .hero-stat-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--mid);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-tag-row {
+      margin-top: 1px;
+      background: var(--ink);
+      padding: 1.25rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .htag {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.06em;
+    }
+
+    .htag-accent { color: rgba(26,107,255,0.9); }
+
+    /* ── SECTION BASE ── */
+    section {
+      padding: 6rem var(--pad);
+      position: relative;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-num {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--faint);
+      letter-spacing: 0.1em;
+    }
+
+    h2 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── ABOUT ── */
+    #about { background: var(--white); border-top: 1px solid var(--rule); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .about-text p {
+      font-size: 1.05rem;
+      color: var(--mid);
+      line-height: 1.8;
+      margin-bottom: 1.25rem;
+    }
+
+    .about-text p strong { color: var(--ink); font-weight: 500; }
+
+    .about-aside { position: relative; }
+
+    .aside-block {
+      border: 1px solid var(--rule);
+      padding: 1.75rem;
+      margin-bottom: 1px;
+      background: var(--bg);
+    }
+
+    .aside-block-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .aside-block p {
+      font-size: 0.9rem;
+      color: var(--mid);
+      line-height: 1.6;
+    }
+
+    .aside-block strong { color: var(--ink); }
+
+    /* ── PROJECTS ── */
+    #projects { border-top: 1px solid var(--rule); }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+
+    .project-card {
+      background: var(--white);
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: background 0.2s;
+      position: relative;
+    }
+
+    .project-card:hover { background: var(--bg); }
+
+    .project-card.featured {
+      grid-column: span 2;
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .project-card.featured:hover { background: #1a1a18; }
+
+    .project-num {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--faint);
+      letter-spacing: 0.1em;
+    }
+
+    .project-card.featured .project-num { color: rgba(255,255,255,0.3); }
+
+    .project-title {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    .project-card.featured .project-title {
+      color: var(--white);
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+    }
+
+    .project-desc {
+      font-size: 0.9rem;
+      color: var(--mid);
+      line-height: 1.7;
+      flex: 1;
+    }
+
+    .project-card.featured .project-desc { color: rgba(255,255,255,0.6); }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: auto;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      padding: 0.25rem 0.6rem;
+      background: var(--tag-bg);
+      color: var(--mid);
+      letter-spacing: 0.04em;
+      border-radius: 2px;
+    }
+
+    .project-card.featured .tag {
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      margin-top: 0.5rem;
+      transition: gap 0.2s;
+    }
+
+    .project-link:hover { gap: 0.75rem; }
+
+    .project-card.featured .project-link { color: rgba(26,107,255,0.9); }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: #22C55E;
+      letter-spacing: 0.06em;
+    }
+
+    .live-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22C55E;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ── SKILLS ── */
+    #skills { background: var(--white); border-top: 1px solid var(--rule); }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+
+    .skill-group {
+      background: var(--bg);
+      padding: 2rem;
+    }
+
+    .skill-group-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .skill-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .skill-item {
+      font-size: 0.88rem;
+      color: var(--mid);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .skill-item::before {
+      content: '—';
+      color: var(--faint);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+    }
+
+    .skill-item strong { color: var(--ink); font-weight: 500; }
+
+    /* ── CONTACT ── */
+    #contact { border-top: 1px solid var(--rule); }
+
+    .contact-inner {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .contact-left h2 {
+      margin-bottom: 1rem;
+    }
+
+    .contact-left p {
+      font-size: 1rem;
+      color: var(--mid);
+      line-height: 1.75;
+      margin-bottom: 2rem;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      border: 1px solid var(--rule);
+    }
+
+    .contact-link-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      background: var(--white);
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .contact-link-row:hover { background: var(--bg); }
+
+    .contact-link-name {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--mid);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .contact-link-val {
+      font-size: 0.88rem;
+      color: var(--ink);
+    }
+
+    .contact-link-arrow {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+    }
+
+    .contact-right {
+      padding-top: 4.5rem;
+    }
+
+    .availability-card {
+      border: 1px solid var(--rule);
+      padding: 2rem;
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .availability-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .availability-status {
+      font-family: var(--serif);
+      font-size: 1.75rem;
+      color: var(--white);
+      margin-bottom: 0.75rem;
+    }
+
+    .availability-status em { color: #22C55E; font-style: normal; }
+
+    .availability-desc {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.6;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem var(--pad);
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-copy {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--faint);
+      letter-spacing: 0.04em;
+    }
+
+    .footer-back {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--mid);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .footer-back:hover { color: var(--accent); }
+
+    /* ── ANIMATIONS ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; gap: 3rem; padding-top: 7rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .project-card.featured { grid-column: span 1; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .contact-right { padding-top: 0; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#hero" class="nav-logo">lautaro<span>.dev</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-left reveal">
+      <div class="hero-label">AI Developer · Córdoba, Argentina</div>
+      <h1>Building <em>intelligent</em> systems that work.</h1>
+      <p class="hero-desc">
+        Full-stack AI developer specialising in LLM applications, RAG pipelines, and production-grade ML systems. I take projects from idea to deployment — end to end.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary">View Projects →</a>
+        <a href="Lautaro_Santos_CV_Studio34.docx" download class="btn btn-outline">Download CV</a>
+      </div>
+    </div>
+
+    <div class="hero-right reveal" style="transition-delay:0.15s">
+      <div class="hero-stat-grid">
+        <div class="hero-stat">
+          <div class="hero-stat-num">2<span>+</span></div>
+          <div class="hero-stat-label">Years building AI</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">5<span>+</span></div>
+          <div class="hero-stat-label">LLM projects shipped</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">16</div>
+          <div class="hero-stat-label">Real users in production</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">3<span>+</span></div>
+          <div class="hero-stat-label">AI certifications</div>
+        </div>
+      </div>
+      <div class="hero-tag-row">
+        <span class="htag htag-accent">LangChain</span>
+        <span class="htag">·</span>
+        <span class="htag htag-accent">LangGraph</span>
+        <span class="htag">·</span>
+        <span class="htag htag-accent">RAG</span>
+        <span class="htag">·</span>
+        <span class="htag">Gemini API</span>
+        <span class="htag">·</span>
+        <span class="htag">OpenAI API</span>
+        <span class="htag">·</span>
+        <span class="htag">ChromaDB</span>
+        <span class="htag">·</span>
+        <span class="htag">Django</span>
+        <span class="htag">·</span>
+        <span class="htag">React</span>
+        <span class="htag">·</span>
+        <span class="htag">Python</span>
+        <span class="htag">·</span>
+        <span class="htag">Docker</span>
+        <span class="htag">·</span>
+        <span class="htag">AWS</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-header reveal">
+      <span class="section-num">01</span>
+      <h2>About me</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          I'm an AI developer based in Córdoba, Argentina, currently completing my degree in <strong>Artificial Intelligence & Data Science at IES21</strong>. I've spent the last two years building production-grade LLM applications — from RAG pipelines and multi-agent systems to full-stack web apps deployed on real infrastructure.
+        </p>
+        <p>
+          At <strong>Scale AI</strong> I spent two years evaluating LLM outputs, designing evaluation rubrics, writing targeted prompts, and leading a small team of trainers across multiple RLHF projects. That experience taught me to think critically about what makes AI systems actually reliable — not just impressive in demos.
+        </p>
+        <p>
+          I like working on problems where there's no clear answer yet. I'll pick up a new framework, dig into undocumented APIs, or rethink an architecture from scratch if that's what the problem needs. I find the way.
+        </p>
+        <div style="margin-top:2rem">
+          <a href="#contact" class="btn btn-outline">Get in touch →</a>
+        </div>
+      </div>
+      <div class="about-aside reveal" style="transition-delay:0.1s">
+        <div class="aside-block">
+          <div class="aside-block-label">Currently</div>
+          <p>Finishing thesis project — an AI lesson planning assistant deployed at a real school in Córdoba. <strong>Live in production</strong> with 16 teachers.</p>
+        </div>
+        <div class="aside-block">
+          <div class="aside-block-label">Education</div>
+          <p><strong>Técnico Superior en IA y Ciencia de Datos</strong><br>IES21 · 2021 – Present (thesis stage)</p>
+        </div>
+        <div class="aside-block">
+          <div class="aside-block-label">Experience</div>
+          <p><strong>AI Trainer & Team Lead</strong> · Scale AI · 2024–2026<br><br>
+          <strong>ML Engineer</strong> · Anyone AI · 2024</p>
+        </div>
+        <div class="aside-block">
+          <div class="aside-block-label">Languages</div>
+          <p>Spanish (native) · English (professional) · Portuguese (basic)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-header reveal">
+      <span class="section-num">02</span>
+      <h2>Projects</h2>
+    </div>
+    <div class="projects-grid">
+
+      <!-- FEATURED -->
+      <div class="project-card featured reveal">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem">
+          <span class="project-num">01 — Featured</span>
+          <span class="live-badge">Live in production</span>
+        </div>
+        <div class="project-title">AI Lesson Planner — Planificador de Clases</div>
+        <p class="project-desc">
+          Full-stack AI assistant for primary school teachers. Generates differentiated lesson plans (NEE/LP/LE levels) grounded in the official Argentine curriculum via RAG. Built with Django + React, deployed on Railway. Real client: Escuela Municipal Dr. Jorge Orgaz, Córdoba. 16 active teachers, ~$6.50/month operating cost.
+        </p>
+        <div class="project-tags">
+          <span class="tag">Python</span>
+          <span class="tag">Django</span>
+          <span class="tag">React</span>
+          <span class="tag">Gemini 2.5 Flash</span>
+          <span class="tag">ChromaDB</span>
+          <span class="tag">RAG</span>
+          <span class="tag">Railway</span>
+          <span class="tag">REST API</span>
+        </div>
+        <div style="display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:0.5rem">
+          <a href="https://github.com/LautaroSantos8/planificador-clases" target="_blank" class="project-link">GitHub →</a>
+          <a href="https://comfortable-wisdom-production-685d.up.railway.app" target="_blank" class="project-link">Live demo →</a>
+        </div>
+      </div>
+
+      <!-- CARD 2 -->
+      <div class="project-card reveal">
+        <span class="project-num">02</span>
+        <div class="project-title">AI Shopping Assistant</div>
+        <p class="project-desc">
+          Conversational agent for a grocery e-commerce platform with 49,000+ products. Combines structured SQL filtering with semantic vector search for hybrid retrieval. Multi-turn context, cart management, and smart human escalation via LangGraph.
+        </p>
+        <div class="project-tags">
+          <span class="tag">Python</span>
+          <span class="tag">LangGraph</span>
+          <span class="tag">LangChain</span>
+          <span class="tag">OpenAI API</span>
+          <span class="tag">ChromaDB</span>
+          <span class="tag">Streamlit</span>
+          <span class="tag">Pytest</span>
+        </div>
+        <a href="https://github.com/LautaroSantos8/ai-shopping-assistant" target="_blank" class="project-link">View on GitHub →</a>
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="project-card reveal" style="transition-delay:0.1s">
+        <span class="project-num">03</span>
+        <div class="project-title">Job Finder Agent</div>
+        <p class="project-desc">
+          LLM-powered career matching app. Upload a CV, get matched to relevant jobs via semantic search, and receive auto-generated personalised cover letters. Supports OpenAI and Gemini via a factory pattern — swap providers with one env variable.
+        </p>
+        <div class="project-tags">
+          <span class="tag">Python</span>
+          <span class="tag">LangChain</span>
+          <span class="tag">ChromaDB</span>
+          <span class="tag">OpenAI API</span>
+          <span class="tag">Gemini API</span>
+          <span class="tag">Chainlit</span>
+        </div>
+        <a href="https://github.com/LautaroSantos8/job-finder-agent-" target="_blank" class="project-link">View on GitHub →</a>
+      </div>
+
+      <!-- CARD 4 -->
+      <div class="project-card reveal">
+        <span class="project-num">04</span>
+        <div class="project-title">Insurance Policy Chatbot</div>
+        <p class="project-desc">
+          Multi-agent chatbot for a Chilean insurance company. Answers policy questions via RAG and surfaces real-time insurance news through a You.com search agent. I led the backend architecture, prompt engineering, and query handling pipeline.
+        </p>
+        <div class="project-tags">
+          <span class="tag">Python</span>
+          <span class="tag">Django</span>
+          <span class="tag">React</span>
+          <span class="tag">Gemini API</span>
+          <span class="tag">LangChain</span>
+          <span class="tag">ChromaDB</span>
+          <span class="tag">Multi-agent</span>
+        </div>
+        <a href="https://github.com/LautaroSantos8/insurance-chatbot" target="_blank" class="project-link">View on GitHub →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-header reveal">
+      <span class="section-num">03</span>
+      <h2>Skills</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-group reveal">
+        <div class="skill-group-label">AI / LLM</div>
+        <div class="skill-list">
+          <div class="skill-item"><strong>LangChain</strong> & LangGraph</div>
+          <div class="skill-item"><strong>OpenAI</strong> & Gemini APIs</div>
+          <div class="skill-item"><strong>RAG</strong> pipelines</div>
+          <div class="skill-item"><strong>RLHF</strong> & evaluation</div>
+          <div class="skill-item"><strong>Prompt engineering</strong></div>
+          <div class="skill-item">Fine-tuning (HuggingFace)</div>
+          <div class="skill-item">Multi-agent systems</div>
+          <div class="skill-item">ChromaDB · Pinecone</div>
+        </div>
+      </div>
+      <div class="skill-group reveal" style="transition-delay:0.1s">
+        <div class="skill-group-label">Backend & Data</div>
+        <div class="skill-list">
+          <div class="skill-item"><strong>Python</strong> (primary)</div>
+          <div class="skill-item"><strong>Django</strong> · FastAPI · Flask</div>
+          <div class="skill-item"><strong>PostgreSQL</strong> · MongoDB</div>
+          <div class="skill-item">SQL · NoSQL · Vector DBs</div>
+          <div class="skill-item">Pandas · Spark · Hadoop</div>
+          <div class="skill-item">scikit-learn · TensorFlow</div>
+          <div class="skill-item">Docker · Git · CI/CD</div>
+          <div class="skill-item">AWS · Railway · Vercel</div>
+        </div>
+      </div>
+      <div class="skill-group reveal" style="transition-delay:0.2s">
+        <div class="skill-group-label">Frontend & Tools</div>
+        <div class="skill-list">
+          <div class="skill-item"><strong>React</strong> · Streamlit</div>
+          <div class="skill-item">Chainlit · Tailwind</div>
+          <div class="skill-item">REST APIs · GraphQL</div>
+          <div class="skill-item">Pytest · unit testing</div>
+          <div class="skill-item">Jira · Git workflows</div>
+          <div class="skill-item">TypeScript <span style="color:var(--faint);font-size:0.75em">(learning)</span></div>
+          <div class="skill-item">Go <span style="color:var(--faint);font-size:0.75em">(learning)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-inner">
+      <div class="contact-left reveal">
+        <div class="section-header" style="margin-bottom:1.5rem">
+          <span class="section-num">04</span>
+          <h2>Contact</h2>
+        </div>
+        <p>
+          Open to full-stack AI developer roles, ML engineering positions, and freelance AI projects. I work in English and Spanish and am comfortable in fully remote environments.
+        </p>
+        <div class="contact-links">
+          <a href="mailto:lautarosantos76@gmail.com" class="contact-link-row">
+            <span class="contact-link-name">Email</span>
+            <span class="contact-link-val">lautarosantos76@gmail.com</span>
+            <span class="contact-link-arrow">↗</span>
+          </a>
+          <a href="https://linkedin.com/in/lautaro-santos-da-silveira-2a0852201/" target="_blank" class="contact-link-row">
+            <span class="contact-link-name">LinkedIn</span>
+            <span class="contact-link-val">lautaro-santos-da-silveira</span>
+            <span class="contact-link-arrow">↗</span>
+          </a>
+          <a href="https://github.com/LautaroSantos8" target="_blank" class="contact-link-row">
+            <span class="contact-link-name">GitHub</span>
+            <span class="contact-link-val">LautaroSantos8</span>
+            <span class="contact-link-arrow">↗</span>
+          </a>
+          <a href="Lautaro_Santos_CV_Studio34.docx" download class="contact-link-row">
+            <span class="contact-link-name">CV</span>
+            <span class="contact-link-val">Download .docx</span>
+            <span class="contact-link-arrow">↓</span>
+          </a>
+        </div>
+      </div>
+      <div class="contact-right reveal" style="transition-delay:0.1s">
+        <div class="availability-card">
+          <div class="availability-label">Availability</div>
+          <div class="availability-status">Available for <em>hire</em></div>
+          <p class="availability-desc">
+            Open to full-time remote positions. Based in Córdoba, Argentina — UTC-3. Available for interviews in English or Spanish.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-copy">© 2026 Lautaro Santos Da Silveira</span>
+    <a href="#hero" class="footer-back">Back to top ↑</a>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Trigger hero immediately
+    document.querySelectorAll('#hero .reveal').forEach(el => {
+      setTimeout(() => el.classList.add('visible'), 100);
+    });
+  </script>
+
+</body>
+</html>
